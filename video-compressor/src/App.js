@@ -1,11 +1,23 @@
 import './App.css';
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
+import { useDropzone } from 'react-dropzone'
+
 import { HiDownload, HiChevronDown } from "react-icons/hi";
 import { AiFillCaretDown, AiFillCaretUp } from "react-icons/ai";
 import { Disclosure, DisclosureButton, DisclosurePanel } from '@headlessui/react'
 
 function App() {
   const [sizesOpen, setSizesOpen] = useState(true);
+
+  const onDrop = useCallback(acceptedFiles => {
+    // Do something with the files
+    console.log(acceptedFiles);
+  }, [])
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    accept: {'video/*': [], }, // Video files only
+    maxFiles: 1,       // One file at a time
+    onDrop,
+  })
 
 
   // Array of possible questions and answers (what it do and how it do)
@@ -19,8 +31,9 @@ function App() {
       <main className="bg-zinc-900 min-h-screen absolute w-full px-2 sm:px-0">
         <div className="max-w-screen-md mx-auto mt-16">
           {/* File Upload */}
-          <div className="aspect-video bg-zinc-800 rounded-xl">
-            <div className="flex flex-col items-center justify-center size-full rounded-xl border-2 border-dashed border-zinc-500">
+          <div className="aspect-video rounded-xl">
+            <div {...getRootProps()} className={`flex flex-col items-center justify-center size-full rounded-xl border-2 border-dashed border-zinc-500 ${isDragActive ? ' bg-zinc-700' : 'bg-zinc-800'}`}>
+              <input {...getInputProps()} />
               <p className="text-zinc-200 mb-1">Drag & drop your video</p>
               <p className="text-zinc-200 text-sm">or</p>
               <button type="button" className="mt-2 flex py-2 px-6 rounded-md text-sm font-medium text-zinc-900 bg-green-500 hover:bg-green-600">
