@@ -129,7 +129,7 @@ function App() {
 
     if (bytes === 0) return '0 Bytes';
     const sizeIndex = Math.floor(Math.log(bytes) / Math.log(1024));
-    return parseFloat((bytes / Math.pow(1024, sizeIndex)).toFixed(2)) + ' ' + sizes[sizeIndex];
+    return parseFloat((bytes / Math.pow(1024, sizeIndex)).toFixed(1)) + ' ' + sizes[sizeIndex];
   }
 
 
@@ -145,7 +145,7 @@ function App() {
     return (
       <>
         <span className={`flex items-center py-0.5 px-1 ml-2 rounded-sm text-xs font-semibold text-zinc-900 ${ percentChange > 0 ? "bg-red-500" : "bg-green-500"}`}>
-          <AiFillCaretDown />
+          {percentChange > 0 ? <AiFillCaretUp /> : <AiFillCaretDown />}
           {Math.abs(percentChange).toFixed(0)}%
         </span >
       </>
