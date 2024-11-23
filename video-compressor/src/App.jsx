@@ -32,6 +32,7 @@ function App() {
     console.log(loaded);
     if (loaded) {
       transcode();
+      setSizesOpen(true);
     }
   }, [loaded]);
 
@@ -55,6 +56,10 @@ function App() {
     ffmpeg.on('log', ({ message }) => {
       // messageRef.current.innerHTML = message;
       console.log(message);
+      if (message.includes("total_size")) {
+        let splitMessage = message.split("=");
+        setCompressedVideoSize(parseInt(splitMessage[1]));
+      }
     });
     // toBlobURL is used to bypass CORS issue, urls with the same
     // domain can be used directly.
@@ -134,12 +139,15 @@ function App() {
    * @param {number} compressed Size of the compressed video file (in bytes).
    * @returns {JSX.Element} A span element with the percentage change.
    */
-  function getPercentChange(original, compressed) {
+  function getPercentChange(original, compressed, isTranscoded) {
     let percentChange = ((compressed - original) / original) * 100;
-    
+
+    // Show only once file finished encoding
+    if (!isTranscoded) return null;
+
     return (
       <>
-        <span className={`flex items-center py-0.5 px-1 ml-2 rounded-sm text-xs font-semibold text-zinc-900 ${ percentChange > 0 ? "bg-red-500" : "bg-green-500"}`}>
+        <span className={`flex items-center py-0.5 px-1 ml-2 rounded-sm text-xs font-semibold text-zinc-900 ${percentChange > 0 ? "bg-red-500" : "bg-green-500"}`}>
           {percentChange > 0 ? <AiFillCaretUp /> : <AiFillCaretDown />}
           {Math.abs(percentChange).toFixed(0)}%
         </span >
@@ -185,12 +193,18 @@ function App() {
                 <div className="flex items-center justify-between w-full">
                   <span className="text-zinc-200 text-3xl flex items-center">
                     {getFileSize(compressedVideoSize)}
-                    {getPercentChange(video.size, compressedVideoSize)}
+                    {getPercentChange(video.size, compressedVideoSize, isTranscoded)}
                   </span>
-                  <a href={downloadUrl} download={getDownloadVideoName()} target='_blank' className="flex items-center py-2 px-3 bg-green-500 rounded-md text-zinc-900 text-sm font-medium hover:bg-green-600">
-                    <HiDownload className="size-4 mr-1" />
-                    Download
-                  </a>
+                  {isTranscoded && downloadUrl && (
+                    <a
+                      href={downloadUrl}
+                      download={getDownloadVideoName()}
+                      className="flex items-center py-2 px-3 bg-green-500 rounded-md text-zinc-900 text-sm font-medium hover:bg-green-600"
+                    >
+                      <HiDownload className="size-4 mr-1" />
+                      Download
+                    </a>
+                  )}
                 </div>
               </div>
             </div>
