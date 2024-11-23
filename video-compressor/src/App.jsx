@@ -12,13 +12,21 @@ import { fetchFile, toBlobURL } from '@ffmpeg/util';
 function App() {
   const [sizesOpen, setSizesOpen] = useState(false);
   const [isTranscoded, setIsTranscoded] = useState(false);
-  const [video, setVideo] = useState({name: "", size: 0});
+  const [video, setVideo] = useState({ name: "", size: 0 });
   const [downloadUrl, setDownloadUrl] = useState(null);
+
+  const [compressedVideoSize, setCompressedVideoSize] = useState(0);
 
   const [loaded, setLoaded] = useState(false);
   const ffmpegRef = useRef(new FFmpeg());
   const videoRef = useRef(null);
   const messageRef = useRef(null);
+
+  // Array of possible questions and answers (what it do and how it do)
+  const faqs = [
+    { question: "What it do?", answer: "It do what it do." },
+    { question: "How it do?", answer: "It do how it do." },
+  ];
 
   useEffect(() => {
     console.log(loaded);
@@ -91,6 +99,7 @@ function App() {
     //   'output.mp4'
     // ]);
     const data = await ffmpeg.readFile('output.mp4');
+    setCompressedVideoSize(data.byteLength);
     let url = URL.createObjectURL(new Blob([data.buffer], { type: 'video/mp4' }));
     setIsTranscoded(true);
     videoRef.current.src = url;
@@ -106,15 +115,43 @@ function App() {
    */
   function getDownloadVideoName() {
     let splitName = video.name.split(".");
-    return splitName[0]+"_compressed."+splitName[1];
+    return splitName[0] + "_compressed." + splitName[1];
   }
 
 
-  // Array of possible questions and answers (what it do and how it do)
-  const faqs = [
-    { question: "What it do?", answer: "It do what it do." },
-    { question: "How it do?", answer: "It do how it do." },
-  ];
+  /**
+   * Converts file size in bytes to a more readable size format with a suffix (KB, MB, GB)
+   * @param {number} bytes File size in bytes.
+   * @returns Converted number
+   */
+  function getFileSize(bytes) {
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+
+    if (bytes === 0) return '0 Bytes';
+    const sizeIndex = Math.floor(Math.log(bytes) / Math.log(1024));
+    return parseFloat((bytes / Math.pow(1024, sizeIndex)).toFixed(2)) + ' ' + sizes[sizeIndex];
+  }
+
+
+  /**
+   * Calculates the percentage change between two numbers and returns a span element with the percentage change.
+   * @param {number} original Size of the original video file (in bytes).
+   * @param {number} compressed Size of the compressed video file (in bytes).
+   * @returns {JSX.Element} A span element with the percentage change.
+   */
+  function getPercentChange(original, compressed) {
+    let percentChange = ((compressed - original) / original) * 100;
+    
+    return (
+      <>
+        <span className={`flex items-center py-0.5 px-1 ml-2 rounded-sm text-xs font-semibold text-zinc-900 ${ percentChange > 0 ? "bg-red-500" : "bg-green-500"}`}>
+          <AiFillCaretDown />
+          {Math.abs(percentChange).toFixed(0)}%
+        </span >
+      </>
+    );
+  }
+
 
   return (
     <>
@@ -144,7 +181,7 @@ function App() {
               {/* BEFORE */}
               <div className="bg-zinc-800 rounded-xl p-4">
                 <h2 className="text-zinc-400 font-light text-sm tracking-wide mb-1">ORIGINAL</h2>
-                <span className="text-zinc-200 text-3xl">50 MB</span>
+                <span className="text-zinc-200 text-3xl">{getFileSize(video.size)}</span>
               </div>
 
               {/* AFTER */}
@@ -152,11 +189,8 @@ function App() {
                 <h2 className="text-zinc-400 font-light text-sm tracking-wide mb-1">COMPRESSED</h2>
                 <div className="flex items-center justify-between w-full">
                   <span className="text-zinc-200 text-3xl flex items-center">
-                    80 MB
-                    <span className="flex items-center py-0.5 px-1 ml-2 bg-green-500 rounded-sm text-xs font-medium text-zinc-900">
-                      <AiFillCaretDown />
-                      80%
-                    </span>
+                    {getFileSize(compressedVideoSize)}
+                    {getPercentChange(video.size, compressedVideoSize)}
                   </span>
                   <a href={downloadUrl} download={getDownloadVideoName()} target='_blank' className="flex items-center py-2 px-3 bg-green-500 rounded-md text-zinc-900 text-sm font-medium hover:bg-green-600">
                     <HiDownload className="size-4 mr-1" />
