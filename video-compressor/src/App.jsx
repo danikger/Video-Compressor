@@ -42,7 +42,7 @@ function App() {
   })
 
   const load = async () => {
-    const baseURL = 'https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd'
+    const baseURL = "https://unpkg.com/@ffmpeg/core-mt@0.12.6/dist/esm";
     const ffmpeg = ffmpegRef.current;
     ffmpeg.on('log', ({ message }) => {
       // messageRef.current.innerHTML = message;
@@ -51,9 +51,9 @@ function App() {
     // toBlobURL is used to bypass CORS issue, urls with the same
     // domain can be used directly.
     await ffmpeg.load({
-      coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, 'text/javascript'),
-      wasmURL: await toBlobURL(`${baseURL}/ffmpeg-core.wasm`, 'application/wasm'),
-      workerURL: await toBlobURL(`${baseURL}/ffmpeg-core.worker.js`, 'text/javascript'),
+      coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, "text/javascript"),
+      wasmURL: await toBlobURL(`${baseURL}/ffmpeg-core.wasm`, "application/wasm"),
+      workerURL: await toBlobURL(`${baseURL}/ffmpeg-core.worker.js`, "text/javascript"),
     });
     setLoaded(true);
   }
@@ -65,10 +65,12 @@ function App() {
     await ffmpeg.exec([
       '-i',
       'input.mp4',       // Input file
+      '-threads',
+      '4',               // Use 8 threads
       '-vcodec',
       'libx264',         // Video codec
       '-crf',
-      '32',              // Constant Rate Factor (quality level, higher = lower quality)
+      '30',              // Constant Rate Factor (quality level, higher = lower quality)
       '-preset',
       'veryfast',       // Preset for faster encoding
       '-c:a',
@@ -95,6 +97,14 @@ function App() {
     setDownloadUrl(url);
     setSizesOpen(true);
     console.log(data);
+  }
+
+  function getCompVideoName() {
+    return "compressed_video.mp4"
+    // var a = "website.old.html";
+    // var nameSplit = a.split(".");
+    // nameSplit.pop();
+    // var name = nameSplit.join(".");
   }
 
 
@@ -146,7 +156,7 @@ function App() {
                       80%
                     </span>
                   </span>
-                  <a href={downloadUrl} download="compressed_video.mp4" target='_blank' className="flex items-center py-2 px-3 bg-green-500 rounded-md text-zinc-900 text-sm font-medium hover:bg-green-600">
+                  <a href={downloadUrl} download={getCompVideoName()} target='_blank' className="flex items-center py-2 px-3 bg-green-500 rounded-md text-zinc-900 text-sm font-medium hover:bg-green-600">
                     <HiDownload className="size-4 mr-1" />
                     Download
                   </a>
