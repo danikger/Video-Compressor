@@ -12,7 +12,7 @@ import { fetchFile, toBlobURL } from '@ffmpeg/util';
 function App() {
   const [sizesOpen, setSizesOpen] = useState(false);
   const [isTranscoded, setIsTranscoded] = useState(false);
-  const [video, setVideo] = useState(null);
+  const [video, setVideo] = useState({name: "", size: 0});
   const [downloadUrl, setDownloadUrl] = useState(null);
 
   const [loaded, setLoaded] = useState(false);
@@ -99,12 +99,14 @@ function App() {
     console.log(data);
   }
 
-  function getCompVideoName() {
-    return "compressed_video.mp4"
-    // var a = "website.old.html";
-    // var nameSplit = a.split(".");
-    // nameSplit.pop();
-    // var name = nameSplit.join(".");
+
+  /**
+   * Adds "_compressed" to the name of the video that was uploaded.
+   * @returns {string} The name of the compressed video
+   */
+  function getDownloadVideoName() {
+    let splitName = video.name.split(".");
+    return splitName[0]+"_compressed."+splitName[1];
   }
 
 
@@ -156,7 +158,7 @@ function App() {
                       80%
                     </span>
                   </span>
-                  <a href={downloadUrl} download={getCompVideoName()} target='_blank' className="flex items-center py-2 px-3 bg-green-500 rounded-md text-zinc-900 text-sm font-medium hover:bg-green-600">
+                  <a href={downloadUrl} download={getDownloadVideoName()} target='_blank' className="flex items-center py-2 px-3 bg-green-500 rounded-md text-zinc-900 text-sm font-medium hover:bg-green-600">
                     <HiDownload className="size-4 mr-1" />
                     Download
                   </a>
