@@ -71,33 +71,28 @@ function App() {
     const ffmpeg = ffmpegRef.current;
     await ffmpeg.writeFile('input.mp4', await fetchFile(video));
     await ffmpeg.exec([
-      '-i',
-      'input.mp4',       // Input file
-      '-threads',
-      '4',               // Use 8 threads
-      '-vcodec',
-      'libx264',         // Video codec
-      '-crf',
-      '30',              // Constant Rate Factor (quality level, higher = lower quality)
-      '-preset',
-      'veryfast',       // Preset for faster encoding
-      '-c:a',
-      'copy',            // Copy audio stream without re-encoding
-      'output.mp4'       // Output file
+      "-i",
+      "input.mp4",
+      '-threads', // Number of threads for multithreading
+      '4',
+      "-c:v", // Video codec
+      "libx264",
+      "-tag:v", // Video tag
+      "avc1",
+      "-movflags", // Moves metadata to the beginning of the file
+      "faststart",
+      "-crf", // Constant Rate Factor (quality level, higher = lower quality)
+      "30",
+      "-preset", // Preset for faster encoding
+      "superfast",
+      "-progress", // Progress info
+      "-",
+      "-v", // Verbose
+      "",
+      "-y",
+      "output.mp4"
     ]);
-    // await ffmpeg.exec([
-    //   '-i', 
-    //   'input.mp4', 
-    //   '-b:v', 
-    //   '1M', // Reduce bitrate to 1 Mbps
-    //   '-c:v', 
-    //   'libx264', 
-    //   '-preset', 
-    //   'ultrafast', 
-    //   '-pix_fmt', 
-    //   'yuv420p', 
-    //   'output.mp4'
-    // ]);
+
     const data = await ffmpeg.readFile('output.mp4');
     setCompressedVideoSize(data.byteLength);
     let url = URL.createObjectURL(new Blob([data.buffer], { type: 'video/mp4' }));
