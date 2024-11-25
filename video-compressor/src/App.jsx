@@ -1,6 +1,7 @@
 import './App.css';
-import { useState, useCallback, useRef, useEffect } from 'react';
-import { useDropzone } from 'react-dropzone'
+import { useState, useRef, useEffect } from 'react';
+import ProgressBar from './Components/progressBar';
+import FileDropzone from './Components/fileDropzone';
 
 import { HiDownload, HiChevronDown } from "react-icons/hi";
 import { AiFillCaretDown, AiFillCaretUp } from "react-icons/ai";
@@ -11,16 +12,18 @@ import { fetchFile, toBlobURL } from '@ffmpeg/util';
 
 function App() {
   const [sizesOpen, setSizesOpen] = useState(false);
-  const [isTranscoded, setIsTranscoded] = useState(false);
   const [video, setVideo] = useState({ name: "", size: 0 });
-  const [downloadUrl, setDownloadUrl] = useState(null);
+  const [hideDropzone, setHideDropzone] = useState(false);
 
   const [compressedVideoSize, setCompressedVideoSize] = useState(0);
 
   const [loaded, setLoaded] = useState(false);
   const ffmpegRef = useRef(new FFmpeg());
   const videoRef = useRef(null);
-  const messageRef = useRef(null);
+
+  const [transcodingProgress, setTranscodingProgress] = useState(0);
+  const [isTranscoded, setIsTranscoded] = useState(false);
+  const [downloadUrl, setDownloadUrl] = useState(null);
 
   // Array of possible questions and answers (what it do and how it do)
   const faqs = [
@@ -28,38 +31,27 @@ function App() {
     { question: "How it do?", answer: "It do how it do." },
   ];
 
+
   useEffect(() => {
-    console.log(loaded);
     if (loaded) {
       transcode();
       setSizesOpen(true);
     }
   }, [loaded]);
 
-  const onDrop = useCallback(acceptedFiles => {
-    // Do something with the files
-    console.log(acceptedFiles);
-    if (acceptedFiles.length > 0) {
-      setVideo(acceptedFiles[0]);
-      load();
-    }
-  }, [])
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    accept: { 'video/*': [], }, // Video files only
-    maxFiles: 1,       // One file at a time
-    onDrop,
-  })
 
   const load = async () => {
     const baseURL = "https://unpkg.com/@ffmpeg/core-mt@0.12.6/dist/esm";
     const ffmpeg = ffmpegRef.current;
     ffmpeg.on('log', ({ message }) => {
-      // messageRef.current.innerHTML = message;
       console.log(message);
       if (message.includes("total_size")) {
         let splitMessage = message.split("=");
         setCompressedVideoSize(parseInt(splitMessage[1]));
       }
+    });
+    ffmpeg.on('progress', ({ progress }) => {
+      setTranscodingProgress(progress * 100);
     });
     // toBlobURL is used to bypass CORS issue, urls with the same
     // domain can be used directly.
@@ -105,12 +97,12 @@ function App() {
     videoRef.current.src = url;
     setDownloadUrl(url);
     setSizesOpen(true);
-    console.log(data);
   }
 
 
   /**
    * Adds "_compressed" to the name of the video that was uploaded.
+   * 
    * @returns {string} The name of the compressed video
    */
   function getDownloadVideoName() {
@@ -120,7 +112,20 @@ function App() {
 
 
   /**
+   * Handles the file upload event from the dropzone component.
+   * 
+   * @param {File} video Video file that was uploaded through the dropzone. 
+   */
+  function handleFileUpload(video) {
+    setVideo(video);
+    setHideDropzone(true);
+    load();
+  }
+
+
+  /**
    * Converts file size in bytes to a more readable size format with a suffix (KB, MB, GB)
+   * 
    * @param {number} bytes File size in bytes.
    * @returns Converted number
    */
@@ -135,6 +140,7 @@ function App() {
 
   /**
    * Calculates the percentage change between two numbers and returns a span element with the percentage change.
+   * 
    * @param {number} original Size of the original video file (in bytes).
    * @param {number} compressed Size of the compressed video file (in bytes).
    * @returns {JSX.Element} A span element with the percentage change.
@@ -156,24 +162,41 @@ function App() {
   }
 
 
+  /**
+   * Returns the main content area based on the transcoding progress.
+   * 
+   * @param {number} transcodingProgress 
+   * @returns {JSX.Element} Element to display in the main content area. (Dropzone or progress bar)
+   */
+  function getMainContents(transcodingProgress) {
+    console.log(transcodingProgress);
+
+    if (hideDropzone && !isTranscoded) {
+      return (
+        <div className="bg-zinc-800 aspect-video rounded-xl">
+          <div className="flex flex-col items-center justify-center size-full rounded-xl">
+            <ProgressBar progress={transcodingProgress} />
+          </div>
+        </div>
+      );
+    }
+
+    if (!isTranscoded) {
+      return (
+        <div className="aspect-video rounded-xl">
+          <FileDropzone onFileUpload={handleFileUpload} />
+        </div>
+      );
+    }
+  }
+
+
   return (
     <>
       <main className="bg-zinc-900 min-h-screen absolute w-full px-2 sm:px-0">
         <div className="max-w-screen-md mx-auto mt-16">
 
-
-          {!isTranscoded &&
-            <div className="aspect-video rounded-xl">
-              <div {...getRootProps()} className={`flex flex-col items-center justify-center size-full rounded-xl border-2 border-dashed border-zinc-500 ${isDragActive ? ' bg-zinc-700' : 'bg-zinc-800'}`}>
-                <input {...getInputProps()} />
-                <p className="text-zinc-200 mb-1">Drag & drop your video</p>
-                <p className="text-zinc-200 text-sm">or</p>
-                <button type="button" className="mt-2 flex py-2 px-6 rounded-md text-sm font-medium text-zinc-900 bg-green-500 hover:bg-green-600">
-                  Browse Files
-                </button>
-              </div>
-            </div>
-          }
+          {getMainContents(transcodingProgress)}
 
           <>
             <video className={`rounded-xl ${isTranscoded ? "" : "hidden"}`} ref={videoRef} controls></video>
