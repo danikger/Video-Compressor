@@ -3,7 +3,7 @@ import { useState, useRef, useEffect } from 'react';
 import ProgressBar from './Components/progressBar';
 import FileDropzone from './Components/fileDropzone';
 
-import { HiDownload, HiChevronDown } from "react-icons/hi";
+import { HiDownload, HiChevronDown, HiOutlineTrash } from "react-icons/hi";
 import { AiFillCaretDown, AiFillCaretUp } from "react-icons/ai";
 import { Disclosure, DisclosureButton, DisclosurePanel } from '@headlessui/react'
 
@@ -207,7 +207,12 @@ function App() {
               {/* BEFORE */}
               <div className="bg-zinc-800 rounded-xl p-4">
                 <h2 className="text-zinc-400 font-light text-sm tracking-wide mb-1">ORIGINAL</h2>
-                <span className="text-zinc-200 text-3xl">{getFileSize(video.size)}</span>
+                <div className="flex items-center justify-between w-full">
+                  <span className="text-zinc-200 text-3xl">{getFileSize(video.size)}</span>
+                  <button onClick={() => window.location.href = "/"} className="bg-zinc-700 rounded-lg border border-zinc-600 p-1.5 hover:bg-zinc-600">
+                    <HiOutlineTrash className="size-5 text-zinc-200" />
+                  </button>
+                </div>
               </div>
 
               {/* AFTER */}
