@@ -209,7 +209,7 @@ function App() {
                 <h2 className="text-zinc-400 font-light text-sm tracking-wide mb-1">ORIGINAL</h2>
                 <div className="flex items-center justify-between w-full">
                   <span className="text-zinc-200 text-3xl">{getFileSize(video.size)}</span>
-                  <button onClick={() => window.location.href = "/"} className="bg-zinc-700 rounded-lg border border-zinc-600 p-1.5 hover:bg-zinc-600">
+                  <button onClick={() => window.location.href = "/"} className="bg-zinc-800 rounded-lg border border-zinc-600 p-1.5 hover:bg-zinc-700">
                     <HiOutlineTrash className="size-5 text-zinc-200" />
                   </button>
                 </div>
