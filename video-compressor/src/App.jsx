@@ -2,6 +2,7 @@ import './App.css';
 import { useState, useRef, useEffect } from 'react';
 import ProgressBar from './Components/progressBar';
 import FileDropzone from './Components/fileDropzone';
+import VideoPlayer from './Components/videoPlayer';
 
 import { HiDownload, HiChevronDown, HiOutlineTrash } from "react-icons/hi";
 import { AiFillCaretDown, AiFillCaretUp } from "react-icons/ai";
@@ -15,11 +16,13 @@ function App() {
   const [video, setVideo] = useState({ name: "", size: 0 });
   const [hideDropzone, setHideDropzone] = useState(false);
 
+  const [originalVidSrc, setOriginalVidSrc] = useState(null);
+  const [compressedVidSrc, setCompressedVidSrc] = useState(null);
+
   const [compressedVideoSize, setCompressedVideoSize] = useState(0);
 
   const [loaded, setLoaded] = useState(false);
   const ffmpegRef = useRef(new FFmpeg());
-  const videoRef = useRef(null);
 
   const [transcodingProgress, setTranscodingProgress] = useState(0);
   const [isTranscoded, setIsTranscoded] = useState(false);
@@ -94,7 +97,7 @@ function App() {
     setCompressedVideoSize(data.byteLength);
     let url = URL.createObjectURL(new Blob([data.buffer], { type: 'video/mp4' }));
     setIsTranscoded(true);
-    videoRef.current.src = url;
+    setCompressedVidSrc(url);
     setDownloadUrl(url);
     setSizesOpen(true);
   }
@@ -119,6 +122,8 @@ function App() {
   function handleFileUpload(video) {
     setVideo(video);
     setHideDropzone(true);
+    const url = URL.createObjectURL(video);
+    setOriginalVidSrc(url);
     load();
   }
 
@@ -210,9 +215,9 @@ function App() {
 
           {getMainContents(transcodingProgress)}
 
-          <>
-            <video className={`rounded-xl ${isTranscoded ? "" : "hidden"}`} ref={videoRef} controls></video>
-          </>
+          {isTranscoded &&
+            <VideoPlayer originalVidSrc={originalVidSrc} compressedVidSrc={compressedVidSrc} />
+          }
 
           {sizesOpen &&
             <div className="w-full mt-4 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
@@ -250,7 +255,15 @@ function App() {
             </div>
           }
 
-          <dl className="mt-16 space-y-6 divide-y divide-zinc-700">
+          {/* DESCRIPTION */}
+          <div className="flex flex-col gap-4 mt-16 sm:px-0 px-2">
+            <h1 className="text-3xl text-zinc-200 font-semibold">Video Compressor</h1>
+            <p className="text-zinc-400 leading-relaxed">
+              Compress video files with minimal quality loss using FFmpeg. It’s completely free, runs entirely in your browser, and never stores or sends your files anywhere.
+            </p>
+          </div>
+
+          <dl className="mt-16 space-y-6 divide-y divide-zinc-700 sm:px-0 px-2">
             {faqs.map((faq) => (
               <Disclosure key={faq.question} as="div" className="pt-6">
                 <dt>
