@@ -1,10 +1,12 @@
 import './App.css';
 import { useState, useRef, useEffect } from 'react';
+import { useNavigate } from "react-router";
+
 import ProgressBar from './Components/progressBar';
 import FileDropzone from './Components/fileDropzone';
 import VideoPlayer from './Components/videoPlayer';
 
-import { HiDownload, HiChevronDown, HiOutlineTrash } from "react-icons/hi";
+import { HiDownload, HiChevronDown, HiOutlineTrash, HiRefresh } from "react-icons/hi";
 import { AiFillCaretDown, AiFillCaretUp } from "react-icons/ai";
 import { Disclosure, DisclosureButton, DisclosurePanel } from '@headlessui/react'
 
@@ -27,6 +29,9 @@ function App() {
   const [transcodingProgress, setTranscodingProgress] = useState(0);
   const [isTranscoded, setIsTranscoded] = useState(false);
   const [downloadUrl, setDownloadUrl] = useState(null);
+  const [failed, setFailed] = useState(false);
+
+  let navigate = useNavigate();
 
   // Array of possible questions and answers (what it do and how it do)
   const faqs = [
@@ -51,6 +56,10 @@ function App() {
       if (message.includes("total_size")) {
         let splitMessage = message.split("=");
         setCompressedVideoSize(parseInt(splitMessage[1]));
+      }
+      if (message.includes("Aborted(OOM)")) {
+        // something to do with memory. usually happens with high res vids
+        setFailed(true);
       }
     });
     ffmpeg.on('progress', ({ progress }) => {
@@ -193,6 +202,21 @@ function App() {
         </div>
       );
     }
+
+    if (failed) {
+      return (
+        <div className="bg-zinc-800 flex flex-col justify-center items-center rounded-xl p-4 aspect-video">
+          <h2 className="text-zinc-200 font-semibold mb-2">Failed to compress video</h2>
+          <button onClick={() => navigate(0)} className="flex items-center py-2 px-3 bg-green-500 rounded-md text-zinc-900 text-sm font-medium hover:bg-green-600">
+            <HiRefresh className="size-4 mr-1" />
+            Try Again
+          </button>
+        </div>
+      );
+    }
+
+
+
   }
 
 
@@ -215,11 +239,11 @@ function App() {
 
           {getMainContents(transcodingProgress)}
 
-          {isTranscoded &&
+          {isTranscoded && !failed &&
             <VideoPlayer originalVidSrc={originalVidSrc} compressedVidSrc={compressedVidSrc} />
           }
 
-          {sizesOpen &&
+          {sizesOpen && !failed &&
             <div className="w-full mt-4 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
               {/* BEFORE */}
               <div className="bg-zinc-800 rounded-xl p-4">
