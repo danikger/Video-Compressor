@@ -193,8 +193,20 @@ function App() {
 
   return (
     <>
-      <main className="bg-zinc-900 min-h-screen absolute w-full px-2 sm:px-0">
-        <div className="max-w-screen-md mx-auto mt-16">
+      <main className="bg-zinc-900 min-h-screen relative size-full">
+
+        {/* HEADER */}
+        <nav class="bg-zinc-800 border-zinc-700">
+          <div class="max-w-screen-md flex flex-wrap items-center justify-start mx-auto py-4 px-4 md:px-0">
+            <a href="/" class="flex items-center space-x-3">
+              <img draggable="false" src="/logo.svg" class="h-8" alt="Logo" />
+              <span class="text-2xl font-semibold whitespace-nowrap text-zinc-200">VidPress</span>
+            </a>
+          </div>
+        </nav>
+
+
+        <div className="max-w-screen-md mx-auto mt-16 px-2 sm:px-0 pb-16">
 
           {getMainContents(transcodingProgress)}
 
