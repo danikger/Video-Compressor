@@ -269,6 +269,13 @@ function App() {
           </dl>
 
         </div>
+
+        {/* FOOTER */}
+        <footer class="bg-zinc-900 absolute bottom-0 left-0 right-0">
+          <div class="w-full mx-auto max-w-screen-md p-4 flex items-center justify-center">
+            <span class="text-sm text-zinc-400 text-center">2024 VidPress | <a href="https://www.ffmpeg.org/" class="hover:underline">GitHub</a> | Powered by <a href="https://www.ffmpeg.org/" class="hover:underline">FFmpeg</a>.</span>
+          </div>
+        </footer>
       </main >
     </>
   );
