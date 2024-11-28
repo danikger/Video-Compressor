@@ -1,7 +1,7 @@
 import { useDropzone } from 'react-dropzone'
 import { useCallback } from 'react';
 
-export default function FileDropzone({onFileUpload}) {
+export default function FileDropzone({ onFileUpload }) {
 
   const onDrop = useCallback(acceptedFiles => {
     if (acceptedFiles.length > 0) {
@@ -10,8 +10,15 @@ export default function FileDropzone({onFileUpload}) {
   }, [])
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    accept: { 'video/*': [], }, // Video files only
-    maxFiles: 1,       // One file at a time
+    accept: {
+      'video/mp4': [],  // MP4
+      'video/webm': [], // WEBM
+      'video/quicktime': [], // MOV
+      'video/x-msvideo': [], // AVI
+      'video/x-matroska': [], // MKV
+    }, // Videos only
+    maxFiles: 1, // 1 file limit
+    maxSize: 2147483648, // 2GB
     onDrop,
   })
 
