@@ -77,13 +77,17 @@ function App() {
 
 
   const transcode = async () => {
+    const inputFileName = video.name;
+    const inputExtension = inputFileName.split('.').pop();
+    const inputFile = `input.${inputExtension}`;
+
     const ffmpeg = ffmpegRef.current;
-    await ffmpeg.writeFile('input.mp4', await fetchFile(video));
+    await ffmpeg.writeFile(inputFile, await fetchFile(video));
     await ffmpeg.exec([
       "-i",
-      "input.mp4",
-      '-threads', // Number of threads for multithreading
-      '4',
+      inputFile,
+      "-threads", // Number of threads for multithreading
+      "4",
       "-c:v", // Video codec
       "libx264",
       "-tag:v", // Video tag
