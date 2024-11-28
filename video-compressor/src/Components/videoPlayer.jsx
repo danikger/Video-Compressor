@@ -83,12 +83,12 @@ export default function VideoPlayer({ originalVidSrc, compressedVidSrc }) {
     <>
       <ReactCompareSlider
         itemOne={
-          <video autoPlay ref={originalVideoRef} className="rounded-t-xl">
+          <video autoPlay ref={originalVideoRef} className="rounded-t-xl size-full">
             <source src={originalVidSrc} type="video/mp4" />
           </video>
         }
         itemTwo={
-          <video autoPlay ref={compressedVideoRef} className="rounded-t-xl">
+          <video autoPlay ref={compressedVideoRef} className="rounded-t-xl size-full">
             <source src={compressedVidSrc} type="video/mp4" />
           </video>
         }
