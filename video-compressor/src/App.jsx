@@ -225,11 +225,11 @@ function App() {
       <main className="bg-zinc-900 min-h-screen relative size-full">
 
         {/* HEADER */}
-        <nav class="bg-zinc-800 border-zinc-700">
-          <div class="max-w-screen-md flex flex-wrap items-center justify-start mx-auto py-4 px-4 md:px-0">
-            <a href="/" class="flex items-center space-x-3">
-              <img draggable="false" src="/logo.svg" class="h-8" alt="Logo" />
-              <span class="text-2xl font-semibold whitespace-nowrap text-zinc-200">VidPress</span>
+        <nav className="bg-zinc-800 border-zinc-700">
+          <div className="max-w-screen-md flex flex-wrap items-center justify-start mx-auto py-4 px-4 md:px-0">
+            <a href="/" className="flex items-center space-x-3">
+              <img draggable="false" src="/logo.svg" className="h-8" alt="Logo" />
+              <span className="text-2xl font-semibold whitespace-nowrap text-zinc-200">VidPress</span>
             </a>
           </div>
         </nav>
@@ -308,9 +308,9 @@ function App() {
         </div>
 
         {/* FOOTER */}
-        <footer class="bg-zinc-900 absolute bottom-0 left-0 right-0">
-          <div class="w-full mx-auto max-w-screen-md p-4 flex items-center justify-center">
-            <span class="text-sm text-zinc-400 text-center">2024 VidPress | <a href="https://www.ffmpeg.org/" class="hover:underline">GitHub</a> | Powered by <a href="https://www.ffmpeg.org/" class="hover:underline">FFmpeg</a>.</span>
+        <footer className="bg-zinc-900 absolute bottom-0 left-0 right-0">
+          <div className="w-full mx-auto max-w-screen-md p-4 flex items-center justify-center">
+            <span className="text-sm text-zinc-400 text-center">2024 VidPress | <a href="https://www.ffmpeg.org/" className="hover:underline">GitHub</a> | Powered by <a href="https://www.ffmpeg.org/" className="hover:underline">FFmpeg</a>.</span>
           </div>
         </footer>
       </main >
