@@ -265,8 +265,7 @@ function App() {
         {/* HEADER */}
         <Header/>
 
-        {/* Need diff padding */}
-        <div className="max-w-screen-md mx-auto mt-16 px-2 sm:px-0 pb-16">
+        <div className="max-w-screen-md mx-auto mt-16 px-2 pb-16">
 
           {getMainContents(transcodingProgress, mainContentState)}
 
