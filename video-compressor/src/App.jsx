@@ -1,35 +1,38 @@
 import './App.css';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import { useNavigate } from "react-router";
 
 import ProgressBar from './Components/progressBar';
 import FileDropzone from './Components/fileDropzone';
 import VideoPlayer from './Components/videoPlayer';
 
-import { HiDownload, HiChevronDown, HiOutlineTrash, HiRefresh } from "react-icons/hi";
+import { HiDownload, HiChevronDown, HiOutlineTrash, HiRefresh, HiArrowSmRight, HiCog } from "react-icons/hi";
 import { AiFillCaretDown, AiFillCaretUp } from "react-icons/ai";
-import { Disclosure, DisclosureButton, DisclosurePanel } from '@headlessui/react'
+import { Disclosure, DisclosureButton, DisclosurePanel } from '@headlessui/react';
 
 import { FFmpeg } from '@ffmpeg/ffmpeg';
 import { fetchFile, toBlobURL } from '@ffmpeg/util';
 
 function App() {
-  const [sizesOpen, setSizesOpen] = useState(false);
-  const [video, setVideo] = useState({ name: "", size: 0 });
-  const [hideDropzone, setHideDropzone] = useState(false);
+  const [video, setVideo] = useState({ name: "", size: 0 }); // Video file that's uploaded
 
+  // State variables for controlling content visibility
+  const [mainContentState, setMainContentState] = useState("dropzone"); // dropzone, basicSettings, transcoding, transcoded, failed
+  const [failed, setFailed] = useState(false);
+  const [sizesOpen, setSizesOpen] = useState(false);
+  
+  // Video sources / compressed video size
   const [originalVidSrc, setOriginalVidSrc] = useState(null);
   const [compressedVidSrc, setCompressedVidSrc] = useState(null);
-
   const [compressedVideoSize, setCompressedVideoSize] = useState(0);
-
-  const [loaded, setLoaded] = useState(false);
+  
+  // FFmpeg variables
+  const [loaded, setLoaded] = useState(false); // Track if FFmpeg is loaded
   const ffmpegRef = useRef(new FFmpeg());
-
+  
+  const [selectedQuality, setSelectedQuality] = useState({ name: "High", crf: 28 }); // Compression quality
   const [transcodingProgress, setTranscodingProgress] = useState(0);
-  const [isTranscoded, setIsTranscoded] = useState(false);
-  const [downloadUrl, setDownloadUrl] = useState(null);
-  const [failed, setFailed] = useState(false);
+  const [downloadUrl, setDownloadUrl] = useState(null); // Download URL for the compressed video
 
   let navigate = useNavigate();
 
@@ -39,13 +42,12 @@ function App() {
     { question: "How it do?", answer: "It do how it do." },
   ];
 
-
-  useEffect(() => {
-    if (loaded) {
-      transcode();
-      setSizesOpen(true);
-    }
-  }, [loaded]);
+  const compressionOptions = [
+    { name: "High", crf: 28 },
+    { name: "Medium", crf: 30 },
+    { name: "Low", crf: 33 },
+    // { name: "Very Low", crf: 34 },
+  ];
 
 
   const load = async () => {
@@ -81,6 +83,8 @@ function App() {
     const inputExtension = inputFileName.split('.').pop();
     const inputFile = `input.${inputExtension}`;
 
+    const crf = selectedQuality.crf.toString();
+
     const ffmpeg = ffmpegRef.current;
     await ffmpeg.writeFile(inputFile, await fetchFile(video));
     await ffmpeg.exec([
@@ -95,7 +99,7 @@ function App() {
       "-movflags", // Moves metadata to the beginning of the file
       "faststart",
       "-crf", // Constant Rate Factor (quality level, higher = lower quality)
-      "30",
+      crf,
       "-preset", // Preset for faster encoding
       "superfast",
       "-progress", // Progress info
@@ -109,10 +113,10 @@ function App() {
     const data = await ffmpeg.readFile('output.mp4');
     setCompressedVideoSize(data.byteLength);
     let url = URL.createObjectURL(new Blob([data.buffer], { type: 'video/mp4' }));
-    setIsTranscoded(true);
+    setMainContentState("transcoded");
     setCompressedVidSrc(url);
     setDownloadUrl(url);
-    setSizesOpen(true);
+    // setSizesOpen(true);
   }
 
 
@@ -134,7 +138,7 @@ function App() {
    */
   function handleFileUpload(video) {
     setVideo(video);
-    setHideDropzone(true);
+    setMainContentState("basicSettings");
     const url = URL.createObjectURL(video);
     setOriginalVidSrc(url);
     load();
@@ -163,11 +167,8 @@ function App() {
    * @param {number} compressed Size of the compressed video file (in bytes).
    * @returns {JSX.Element} A span element with the percentage change.
    */
-  function getPercentChange(original, compressed, isTranscoded) {
+  function getPercentChange(original, compressed) {
     let percentChange = ((compressed - original) / original) * 100;
-
-    // Show only once file finished encoding
-    if (!isTranscoded) return null;
 
     return (
       <>
@@ -183,26 +184,31 @@ function App() {
   /**
    * Returns the main content area based on the transcoding progress.
    * 
-   * @param {number} transcodingProgress 
-   * @returns {JSX.Element} Element to display in the main content area. (Dropzone or progress bar)
+   * @param {number} transcodingProgress - Progress of the transcoding process.
+   * @param {string} mainContentState - Controls what state should be displayed.
+   * @returns {JSX.Element} Element to display in the main content area. (Dropzone, progress bar, etc.)
    */
-  function getMainContents(transcodingProgress) {
+  function getMainContents(transcodingProgress, mainContentState) {
     console.log(transcodingProgress);
 
-    if (hideDropzone && !isTranscoded) {
+    if (mainContentState === "dropzone") {
       return (
-        <div className="bg-zinc-800 aspect-video rounded-xl">
-          <div className="flex flex-col items-center justify-center size-full rounded-xl">
-            <ProgressBar progress={transcodingProgress} />
+        <div className="aspect-video rounded-xl">
+          <FileDropzone onFileUpload={handleFileUpload} />
+          <div className="sm:flex-row flex-col flex justify-between text-zinc-400 mt-3 gap-y-2 text-sm font-light">
+            <span>Supported formats: mp4, webm, mov, avi, mkv</span>
+            <span>Maximum size: 2GB</span>
           </div>
         </div>
       );
     }
 
-    if (!isTranscoded) {
+    if (mainContentState === "transcoding") {
       return (
-        <div className="aspect-video rounded-xl">
-          <FileDropzone onFileUpload={handleFileUpload} />
+        <div className="bg-zinc-800 aspect-video rounded-xl">
+          <div className="flex flex-col items-center justify-center size-full rounded-xl">
+            <ProgressBar progress={transcodingProgress} />
+          </div>
         </div>
       );
     }
@@ -219,8 +225,34 @@ function App() {
       );
     }
 
+    if (mainContentState === "basicSettings") {
+      return (
+        <div className="rounded-xl">
+          <div className="flex flex-col items-center justify-center size-full rounded-xl bg-zinc-800 sm:py-20 py-14">
+            <div className="flex flex-col gap-4">
+              <h2 className="text-zinc-200 font-semibold text-lg">Compression Quality</h2>
+              {compressionOptions.map((qualityOption) => (
+                <button key={qualityOption.name} onClick={() => setSelectedQuality(qualityOption)} className={`bg-zinc-700 hover:bg-zinc-600 border-2 text-zinc-200 font-semibold px-5 py-2.5 rounded-md text-sm ${selectedQuality.name === qualityOption.name ? "border-zinc-200" : "border-zinc-600"}`}>{qualityOption.name}</button>
+              ))}
+              {/* <button className="flex items-center justify-center text-zinc-200 font-semibold text-sm hover:underline"><HiCog className="size-5 mr-1" />Custom Settings</button> */}
+            </div>
+            <button onClick={() => startCompression()} className="flex items-center py-2.5 px-3.5 bg-green-500 rounded-md text-zinc-900 text-sm font-medium hover:bg-green-600 mt-8">Compress Now <HiArrowSmRight className="size-4 ml-1" /></button>
+          </div>
+        </div>
+      );
+    }
+  }
 
 
+  /**
+   * Starts the transcoding process, displays original/compressed sizes, and sets the main content state to "transcoding".
+   */
+  function startCompression() {
+    if (loaded) {
+      transcode();
+      setSizesOpen(true);
+      setMainContentState("transcoding");
+    }
   }
 
 
@@ -232,18 +264,18 @@ function App() {
         <nav className="bg-zinc-800 border-zinc-700">
           <div className="max-w-screen-md flex flex-wrap items-center justify-start mx-auto py-4 px-4 md:px-0">
             <a href="/" className="flex items-center space-x-3">
-              <img draggable="false" src="/logo.svg" className="h-8" alt="Logo" />
+              <img draggable="false" src="/logo.svg" className="h-8" alt="VidPress Logo" />
               <span className="text-2xl font-semibold whitespace-nowrap text-zinc-200">VidPress</span>
             </a>
           </div>
         </nav>
 
-
+        {/* Need diff padding */}
         <div className="max-w-screen-md mx-auto mt-16 px-2 sm:px-0 pb-16">
 
-          {getMainContents(transcodingProgress)}
+          {getMainContents(transcodingProgress, mainContentState)}
 
-          {isTranscoded && !failed &&
+          {mainContentState === "transcoded" && !failed &&
             <VideoPlayer originalVidSrc={originalVidSrc} compressedVidSrc={compressedVidSrc} />
           }
 
@@ -266,9 +298,9 @@ function App() {
                 <div className="flex items-center justify-between w-full">
                   <span className="text-zinc-200 text-3xl flex items-center">
                     {getFileSize(compressedVideoSize)}
-                    {getPercentChange(video.size, compressedVideoSize, isTranscoded)}
+                    {mainContentState === "transcoded" && getPercentChange(video.size, compressedVideoSize)}
                   </span>
-                  {isTranscoded && downloadUrl && (
+                  {mainContentState === "transcoded" && downloadUrl && (
                     <a
                       href={downloadUrl}
                       download={getDownloadVideoName()}
