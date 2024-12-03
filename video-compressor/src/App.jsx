@@ -291,7 +291,7 @@ function App() {
             </p>
           </div>
 
-          <dl className="mt-16 space-y-6 divide-y divide-zinc-700 sm:px-0 px-2">
+          {/* <dl className="mt-16 space-y-6 divide-y divide-zinc-700 sm:px-0 px-2">
             {faqs.map((faq) => (
               <Disclosure key={faq.question} as="div" className="pt-6">
                 <dt>
@@ -307,7 +307,7 @@ function App() {
                 </DisclosurePanel>
               </Disclosure>
             ))}
-          </dl>
+          </dl> */}
 
         </div>
 
