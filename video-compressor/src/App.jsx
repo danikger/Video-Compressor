@@ -5,6 +5,8 @@ import { useNavigate } from "react-router";
 import ProgressBar from './Components/progressBar';
 import FileDropzone from './Components/fileDropzone';
 import VideoPlayer from './Components/videoPlayer';
+import Header from './Components/Common/header';
+import Footer from './Components/Common/footer';
 
 import { HiDownload, HiChevronDown, HiOutlineTrash, HiRefresh, HiArrowSmRight, HiCog } from "react-icons/hi";
 import { AiFillCaretDown, AiFillCaretUp } from "react-icons/ai";
@@ -261,14 +263,7 @@ function App() {
       <main className="bg-zinc-900 min-h-screen relative size-full">
 
         {/* HEADER */}
-        <nav className="bg-zinc-800 border-zinc-700">
-          <div className="max-w-screen-md flex flex-wrap items-center justify-start mx-auto py-4 px-4 md:px-0">
-            <a href="/" className="flex items-center space-x-3">
-              <img draggable="false" src="/logo.svg" className="h-8" alt="VidPress Logo" />
-              <span className="text-2xl font-semibold whitespace-nowrap text-zinc-200">VidPress</span>
-            </a>
-          </div>
-        </nav>
+        <Header/>
 
         {/* Need diff padding */}
         <div className="max-w-screen-md mx-auto mt-16 px-2 sm:px-0 pb-16">
@@ -344,11 +339,7 @@ function App() {
         </div>
 
         {/* FOOTER */}
-        <footer className="bg-zinc-900 absolute bottom-0 left-0 right-0">
-          <div className="w-full mx-auto max-w-screen-md p-4 flex items-center justify-center">
-            <span className="text-sm text-zinc-400 text-center">2024 VidPress | <a href="https://github.com/danikger/Video-Compressor" className="hover:underline">GitHub</a> | Powered by <a href="https://www.ffmpeg.org/" className="hover:underline">FFmpeg</a>.</span>
-          </div>
-        </footer>
+        <Footer/>
       </main >
     </>
   );
