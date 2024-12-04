@@ -53,7 +53,8 @@ function App() {
 
 
   const load = async () => {
-    const baseURL = "https://unpkg.com/@ffmpeg/core-mt@0.12.6/dist/esm";
+    // const baseURL = "https://unpkg.com/@ffmpeg/core-mt@0.12.6/dist/esm";
+    const baseURL = "/ffmpeg";
     const ffmpeg = ffmpegRef.current;
     ffmpeg.on('log', ({ message }) => {
       console.log(message);
@@ -71,11 +72,13 @@ function App() {
     });
     // toBlobURL is used to bypass CORS issue, urls with the same
     // domain can be used directly.
+    console.log("Loading FFmpeg...");
     await ffmpeg.load({
       coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, "text/javascript"),
       wasmURL: await toBlobURL(`${baseURL}/ffmpeg-core.wasm`, "application/wasm"),
       workerURL: await toBlobURL(`${baseURL}/ffmpeg-core.worker.js`, "text/javascript"),
     });
+    console.log("Loaded FFmpeg");
     setLoaded(true);
   }
 
