@@ -236,7 +236,7 @@ function App() {
               {compressionOptions.map((qualityOption) => (
                 <button key={qualityOption.name} onClick={() => setSelectedQuality(qualityOption)} className={`bg-zinc-700 hover:bg-zinc-600 border-2 text-zinc-200 font-semibold px-5 py-2.5 rounded-md text-sm ${selectedQuality.name === qualityOption.name ? "border-zinc-200" : "border-zinc-600"}`}>{qualityOption.name}</button>
               ))}
-              <button className="flex items-center justify-center text-zinc-200 font-semibold text-sm hover:underline"><HiCog className="size-5 mr-1" />Custom Settings</button>
+              {/* <button className="flex items-center justify-center text-zinc-200 font-semibold text-sm hover:underline"><HiCog className="size-5 mr-1" />Custom Settings</button> */}
             </div>
             <button onClick={() => startCompression()} className="flex items-center py-2.5 px-3.5 bg-green-500 rounded-md text-zinc-900 text-sm font-medium hover:bg-green-600 mt-8">Compress Now <HiArrowSmRight className="size-4 ml-1" /></button>
           </div>
