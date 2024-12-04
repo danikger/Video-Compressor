@@ -1,7 +1,7 @@
 {
   "headers": [
     {
-      "source": "/(.*)",
+      "source": "/_next-live/feedback/feedback.js",
       "headers": [
         {
           "key": "Cross-Origin-Opener-Policy",
