@@ -227,7 +227,7 @@ function App() {
       );
     }
 
-    if (mainContentState === "basicSettings") {
+    if (mainContentState === "basicSettings" && loaded) {
       return (
         <div className="rounded-xl">
           <div className="flex flex-col items-center justify-center size-full rounded-xl bg-zinc-800 sm:py-20 py-14">
