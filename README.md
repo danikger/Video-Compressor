@@ -2,7 +2,7 @@
 
 This is a web-based video compression tool built with React, Vite, and Tailwind CSS for styling. It allows users to compress video files directly in their browser using FFmpeg.
 
-### Check it out [here](https://video-compressor-seven.vercel.app/)
+### Check it out [here](https://www.vidpress.co/)
  
 ## Getting Started
 
