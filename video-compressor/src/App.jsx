@@ -60,7 +60,6 @@ function App() {
     // const baseURL = "/ffmpeg";
     const ffmpeg = ffmpegRef.current;
     ffmpeg.on('log', ({ message }) => {
-      console.log(message);
       if (message.includes("total_size")) {
         let splitMessage = message.split("=");
         setCompressedVideoSize(parseInt(splitMessage[1]));
@@ -75,13 +74,11 @@ function App() {
     });
     // toBlobURL is used to bypass CORS issue, urls with the same
     // domain can be used directly.
-    console.log("Loading FFmpeg...");
     await ffmpeg.load({
       coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, "text/javascript"),
       wasmURL: await toBlobURL(`${baseURL}/ffmpeg-core.wasm`, "application/wasm"),
       workerURL: await toBlobURL(`${baseURL}/ffmpeg-core.worker.js`, "text/javascript"),
     });
-    console.log("Loaded FFmpeg");
     setLoaded(true);
     setLoading(false);
   }
@@ -198,8 +195,6 @@ function App() {
    * @returns {JSX.Element} Element to display in the main content area. (Dropzone, progress bar, etc.)
    */
   function getMainContents(transcodingProgress, mainContentState) {
-    console.log(transcodingProgress);
-
     if (mainContentState === "dropzone") {
       return (
         <div className="aspect-video rounded-xl">
