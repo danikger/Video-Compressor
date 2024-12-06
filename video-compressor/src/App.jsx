@@ -9,6 +9,7 @@ import Header from './Components/Common/header';
 import Footer from './Components/Common/footer';
 
 import { HiDownload, HiChevronDown, HiOutlineTrash, HiRefresh, HiArrowSmRight, HiCog } from "react-icons/hi";
+import { RiLoader5Fill } from "react-icons/ri";
 import { AiFillCaretDown, AiFillCaretUp } from "react-icons/ai";
 import { Disclosure, DisclosureButton, DisclosurePanel } from '@headlessui/react';
 
@@ -22,16 +23,17 @@ function App() {
   const [mainContentState, setMainContentState] = useState("dropzone"); // dropzone, basicSettings, transcoding, transcoded, failed
   const [failed, setFailed] = useState(false);
   const [sizesOpen, setSizesOpen] = useState(false);
-  
+
   // Video sources / compressed video size
   const [originalVidSrc, setOriginalVidSrc] = useState(null);
   const [compressedVidSrc, setCompressedVidSrc] = useState(null);
   const [compressedVideoSize, setCompressedVideoSize] = useState(0);
-  
+
   // FFmpeg variables
+  const [loading, setLoading] = useState(true); // Track if FFmpeg is loading
   const [loaded, setLoaded] = useState(false); // Track if FFmpeg is loaded
   const ffmpegRef = useRef(new FFmpeg());
-  
+
   const [selectedQuality, setSelectedQuality] = useState({ name: "High", crf: 28 }); // Compression quality
   const [transcodingProgress, setTranscodingProgress] = useState(0);
   const [downloadUrl, setDownloadUrl] = useState(null); // Download URL for the compressed video
@@ -53,6 +55,7 @@ function App() {
 
 
   const load = async () => {
+    setLoading(true);
     const baseURL = "https://unpkg.com/@ffmpeg/core-mt@0.12.6/dist/esm";
     // const baseURL = "/ffmpeg";
     const ffmpeg = ffmpegRef.current;
@@ -80,6 +83,7 @@ function App() {
     });
     console.log("Loaded FFmpeg");
     setLoaded(true);
+    setLoading(false);
   }
 
 
@@ -230,6 +234,15 @@ function App() {
       );
     }
 
+    if (loading) {
+      return (
+        <div className="bg-zinc-800 flex flex-col justify-center items-center rounded-xl p-4 aspect-video">
+          <RiLoader5Fill className="size-8 text-zinc-200 mb-4 animate-spin rounded-full" />
+          <span className="text-zinc-200 text-sm">Loading Resources</span>
+        </div>
+      );
+    }
+
     if (mainContentState === "basicSettings" && loaded) {
       return (
         <div className="rounded-xl">
@@ -266,7 +279,7 @@ function App() {
       <main className="bg-zinc-900 min-h-screen relative size-full">
 
         {/* HEADER */}
-        <Header/>
+        <Header />
 
         <div className="max-w-screen-md mx-auto mt-16 px-2 pb-16">
 
@@ -341,7 +354,7 @@ function App() {
         </div>
 
         {/* FOOTER */}
-        <Footer/>
+        <Footer />
       </main >
     </>
   );
