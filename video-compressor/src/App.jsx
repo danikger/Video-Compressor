@@ -53,8 +53,8 @@ function App() {
 
 
   const load = async () => {
-    // const baseURL = "https://unpkg.com/@ffmpeg/core-mt@0.12.6/dist/esm";
-    const baseURL = "/ffmpeg";
+    const baseURL = "https://unpkg.com/@ffmpeg/core-mt@0.12.6/dist/esm";
+    // const baseURL = "/ffmpeg";
     const ffmpeg = ffmpegRef.current;
     ffmpeg.on('log', ({ message }) => {
       console.log(message);
