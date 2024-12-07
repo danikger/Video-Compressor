@@ -6,6 +6,8 @@ export default function VideoPlayer({ originalVidSrc, compressedVidSrc }) {
   const [sliderValue, setSliderValue] = useState(0); // Slider value in seconds
   const [duration, setDuration] = useState(0); // Duration of the video
 
+  const [isPlaying, setIsPlaying] = useState(true);
+
   const originalVideoRef = useRef(null);
   const compressedVideoRef = useRef(null);
 
@@ -72,9 +74,11 @@ export default function VideoPlayer({ originalVidSrc, compressedVidSrc }) {
     if (originalVideoRef.current.paused) {
       originalVideoRef.current.play();
       compressedVideoRef.current.play();
+      setIsPlaying(true);
     } else {
       originalVideoRef.current.pause();
       compressedVideoRef.current.pause();
+      setIsPlaying(false);
     }
   }
 
@@ -83,12 +87,12 @@ export default function VideoPlayer({ originalVidSrc, compressedVidSrc }) {
     <>
       <ReactCompareSlider
         itemOne={
-          <video autoPlay ref={originalVideoRef} className="rounded-t-xl size-full">
+          <video autoPlay muted ref={originalVideoRef} playsInline className="rounded-t-xl size-full">
             <source src={originalVidSrc} type="video/mp4" />
           </video>
         }
         itemTwo={
-          <video autoPlay ref={compressedVideoRef} className="rounded-t-xl size-full">
+          <video autoPlay muted ref={compressedVideoRef} playsInline className="rounded-t-xl size-full">
             <source src={compressedVidSrc} type="video/mp4" />
           </video>
         }
@@ -96,7 +100,7 @@ export default function VideoPlayer({ originalVidSrc, compressedVidSrc }) {
 
       <div className="flex items-center bg-zinc-800 rounded-b-xl px-3 py-2">
         <button onClick={() => handlePausePlay()} className="group mr-2">
-          {originalVideoRef.current && originalVideoRef.current.paused ? <BsFillPlayFill className="text-zinc-200 size-6 group-hover:text-zinc-50" /> : <BsPauseFill className="text-zinc-200 size-6 group-hover:text-zinc-50" />}
+          {isPlaying ? <BsPauseFill className="text-zinc-200 size-6 group-hover:text-zinc-50" /> : <BsFillPlayFill className="text-zinc-200 size-6 group-hover:text-zinc-50" />}
         </button>
         <input
           id="video-slider"
