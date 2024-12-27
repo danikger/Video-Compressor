@@ -133,7 +133,7 @@ function App() {
    */
   function getDownloadVideoName() {
     let splitName = video.name.split(".");
-    return splitName[0] + "_compressed." + splitName[1];
+    return splitName.slice(0, -1).join("") + "_compressed." + splitName[splitName.length - 1];
   }
 
 
