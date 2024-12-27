@@ -8,10 +8,9 @@ import VideoPlayer from './Components/videoPlayer';
 import Header from './Components/Common/header';
 import Footer from './Components/Common/footer';
 
-import { HiDownload, HiChevronDown, HiOutlineTrash, HiRefresh, HiArrowSmRight, HiCog } from "react-icons/hi";
+import { HiDownload, HiOutlineTrash, HiRefresh, HiArrowSmRight } from "react-icons/hi";
 import { RiLoader5Fill } from "react-icons/ri";
 import { AiFillCaretDown, AiFillCaretUp } from "react-icons/ai";
-import { Disclosure, DisclosureButton, DisclosurePanel } from '@headlessui/react';
 
 import { FFmpeg } from '@ffmpeg/ffmpeg';
 import { fetchFile, toBlobURL } from '@ffmpeg/util';
@@ -39,12 +38,6 @@ function App() {
   const [downloadUrl, setDownloadUrl] = useState(null); // Download URL for the compressed video
 
   let navigate = useNavigate();
-
-  // Array of possible questions and answers (what it do and how it do)
-  const faqs = [
-    { question: "What it do?", answer: "It do what it do." },
-    { question: "How it do?", answer: "It do how it do." },
-  ];
 
   const compressionOptions = [
     { name: "High", crf: 28 },
@@ -327,24 +320,6 @@ function App() {
               Compress video files with minimal quality loss using FFmpeg. It’s completely free, runs entirely in your browser, and never stores or sends your files anywhere.
             </p>
           </div>
-
-          {/* <dl className="mt-16 space-y-6 divide-y divide-zinc-700 sm:px-0 px-2">
-            {faqs.map((faq) => (
-              <Disclosure key={faq.question} as="div" className="pt-6">
-                <dt>
-                  <DisclosureButton className="group flex w-full items-start justify-between text-left text-zinc-400">
-                    <span className="font-semibold">{faq.question}</span>
-                    <span className="ml-6 flex h-7 items-center">
-                      <HiChevronDown className="size-6 group-data-[open]:rotate-180" />
-                    </span>
-                  </DisclosureButton>
-                </dt>
-                <DisclosurePanel as="dd" className="mt-2 pr-12">
-                  <p className="text-base/7 text-zinc-200">{faq.answer}</p>
-                </DisclosurePanel>
-              </Disclosure>
-            ))}
-          </dl> */}
 
         </div>
 
