@@ -26,7 +26,7 @@ export default function FileDropzone({ onFileUpload }) {
     <div {...getRootProps()} className={`flex flex-col items-center justify-center size-full rounded-xl border-2 border-dashed border-zinc-500 ${isDragActive ? ' bg-zinc-700' : 'bg-zinc-800'}`}>
       <label htmlFor="file-upload" className="sr-only">Upload your video</label>
       <input id="file-upload" {...getInputProps()} />
-      <p className="text-zinc-200 mb-1">Drag & drop your video</p>
+      <p className="text-zinc-200 mb-1 text-center">Drag & drop your video</p>
       <p className="text-zinc-200 text-sm">or</p>
       <button type="button" className="mt-2 flex py-2 px-6 rounded-md text-sm font-medium text-zinc-900 bg-green-500 hover:bg-green-600">
         Select File
